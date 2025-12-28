@@ -185,29 +185,7 @@ The chatbot uses PDF documents stored in the `data/` directory as its knowledge 
    - Supports concurrent users (limited by Groq API rate limits)
    - Efficient document retrieval with Pinecone's approximate nearest neighbor search
 
-## 🛠️ Development
 
-### Running Tests
-```bash
-# Install test dependencies
-pip install -r tests/requirements.txt
-
-# Run tests
-pytest
-```
-
-### Code Style
-This project follows PEP 8 style guidelines. Please run the following before committing:
-```bash
-# Auto-format code
-black .
-
-# Check for style issues
-flake8
-```
-
-### Versioning
-We use [SemVer](https://semver.org/) for versioning. For the versions available, see the [releases](https://github.com/arhamm07/Medical-Chatbot-using-RAG/releases).
 
 ## 📝 License
 
@@ -238,4 +216,4 @@ For detailed documentation, please refer to the [docs](docs/) directory.
 
 - Built with [LangChain](https://python.langchain.com/)
 - Powered by [Groq](https://groq.com/) and [Pinecone](https://www.pinecone.io/)
-- Thanks to all contributors who have helped improve this project
+
