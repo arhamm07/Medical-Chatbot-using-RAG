@@ -1,117 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Medical Chatbot - AI Health Assistant</title>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
-	</head>
-	
-	
-	<body>
-		<div class="chat-container">
-			<div class="chat-wrapper">
-				<div class="chat-card">
-					<div class="chat-header">
-						<div class="bot-info">
-							<div class="bot-avatar">
-								<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Medical Bot" class="avatar-img">
-								<span class="status-indicator online"></span>
-							</div>
-							<div class="bot-details">
-								<h3>Medical AI Assistant</h3>
-								<p>Always here to help with your health questions</p>
-							</div>
-						</div>
-						<div class="header-actions">
-							<button class="action-btn" title="Clear Chat">
-								<i class="fas fa-broom"></i>
-							</button>
-							<button class="action-btn" title="Settings">
-								<i class="fas fa-cog"></i>
-							</button>
-						</div>
-					</div>
-					
-					<div id="messageFormeight" class="chat-messages">
-						<div class="welcome-message">
-							<div class="bot-avatar-small">
-								<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Bot">
-							</div>
-							<div class="welcome-text">
-								Hello! I'm your medical AI assistant. How can I help you today?
-							</div>
-						</div>
-					</div>
-					
-					<div class="chat-input-container">
-						<form id="messageArea" class="message-form">
-							<div class="input-wrapper">
-								<input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="message-input" required/>
-								<button type="button" class="voice-btn" title="Voice Input">
-									<i class="fas fa-microphone"></i>
-								</button>
-								<button type="submit" id="send" class="send-btn" title="Send Message">
-									<i class="fas fa-paper-plane"></i>
-								</button>
-							</div>
-						</form>
-						<div class="typing-indicator" id="typingIndicator">
-							<span></span>
-							<span></span>
-							<span></span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<script>
-			$(document).ready(function() {
-				// Clear chat functionality
-				$('.action-btn').first().click(function() {
-					$('#messageFormeight').html('<div class="welcome-message"><div class="bot-avatar-small"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Bot"></div><div class="welcome-text">Hello! I\'m your medical AI assistant. How can I help you today?</div></div>');
-				});
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medivolt AI | Your Advanced Medical Knowledge Assistant</title>
+    <meta name="description" content="Get instant, reliable medical information and symptom checking with Medivolt AI, powered by advanced RAG technology.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/387/387569.png">
 
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours().toString().padStart(2, '0');
-					const minute = date.getMinutes().toString().padStart(2, '0');
-					const str_time = hour + ":" + minute;
-					var rawText = $("#text").val();
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons and Styles -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Markdown Renderer -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
 
-					// Show typing indicator
-					$("#typingIndicator").show();
-					
-					// Remove welcome message if it exists
-					$('.welcome-message').remove();
+    <!-- Main App -->
+    <main class="main-content">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="bot-badge">
+                    <div class="bot-avatar-wrap">
+                        <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Bot" class="bot-avatar-img">
+                        <span class="status-dot"></span>
+                    </div>
+                    <div class="bot-name">Dr. Medivolt AI</div>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="icon-btn" title="Clear chat" onclick="clearMessages()">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        </header>
 
-					var userHtml = '<div class="message user-message"><div class="message-content">' + rawText + '<span class="message-time">' + str_time + '</span></div><div class="user-avatar"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" alt="User"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
 
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						$("#typingIndicator").hide();
-						var botHtml = '<div class="message bot-message"><div class="bot-avatar-small"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Bot"></div><div class="message-content">' + data + '<span class="message-time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					}).fail(function() {
-						$("#typingIndicator").hide();
-					});
-					event.preventDefault();
-				});
-			});
-		</script>
-        
-    </body>
+        <!-- Chat Container -->
+        <section class="chat-window" id="chatWindow">
+            <div class="chat-inner" id="messageContainer">
+                
+                <!-- Home / Onboarding View -->
+                <div class="home-view" id="homeView">
+                    <div class="home-illustration">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <h1>Your Personal Health Partner</h1>
+                    <p>I'm your AI-powered medical assistant. Ask me about symptoms, medications, or general health concerns.</p>
+                    
+                    <div class="suggested-actions">
+                        <div class="action-card" onclick="setQuickInput('I have been feeling dizzy and nauseous lately. What could be the cause?')">
+                            <i data-lucide="activity"></i>
+                            <span>Symptom Check</span>
+                            <p>Describe your discomfort</p>
+                        </div>
+                        <div class="action-card" onclick="setQuickInput('Can you explain the side effects of Metformin and any food interactions?')">
+                            <i data-lucide="pill"></i>
+                            <span>Medication Guide</span>
+                            <p>Info about interactions & doses</p>
+                        </div>
+                        <div class="action-card" onclick="setQuickInput('What are the best habits for heart health and reducing blood pressure?')">
+                            <i data-lucide="heart"></i>
+                            <span>Healthy Habits</span>
+                            <p>Prevention and lifestyle advice</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages will be appended here -->
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <form id="chatForm">
+                <div class="input-container">
+                    <div class="input-main">
+                        <textarea 
+                            id="user-input" 
+                            class="chat-input" 
+                            placeholder="Type your health concern here..." 
+                            rows="1"
+                            autocomplete="off"
+                        ></textarea>
+                        
+                        <div class="input-actions">
+                            <button type="button" class="icon-btn" title="Voice Input">
+                                <i data-lucide="mic"></i>
+                            </button>
+                            <button type="submit" id="sendBtn" class="send-btn-new" disabled>
+                                <i data-lucide="send"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-footer">
+                        <span>Powered by Medivolt RAG Engine</span>
+                        <div id="typingIndicator" style="display: none;">
+                            <div class="typing-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        const $chatForm = $('#chatForm');
+        const $input = $('#user-input');
+        const $sendBtn = $('#sendBtn');
+        const $messageContainer = $('#messageContainer');
+        const $chatWindow = $('#chatWindow');
+        const $homeView = $('#homeView');
+        const $typingIndicator = $('#typingIndicator');
+
+        // Quick Input
+        function setQuickInput(text) {
+            $input.val(text).trigger('input').focus();
+        }
+
+
+        // Auto-resize textarea
+        $input.on('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            $sendBtn.prop('disabled', this.value.trim() === '');
+        });
+
+        // Chat Logic
+        function appendMessage(role, text) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const isUser = role === 'user';
+            
+            const html = `
+                <div class="message-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}">
+                    <div class="message-avatar">
+                        <img src="${isUser ? 'https://avatar.vercel.sh/' + role + '.png' : 'https://cdn-icons-png.flaticon.com/512/387/387569.png'}" alt="avatar">
+                    </div>
+                    <div class="message-content-wrap">
+                        <span class="message-name">${isUser ? 'You' : 'Dr. Medivolt'}</span>
+                        <div class="content">
+                            ${isUser ? text : marked.parse(text)}
+                        </div>
+                        <span class="message-time">${time}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Hide home view on first message
+            if ($homeView.is(':visible')) {
+                $homeView.hide();
+            }
+            
+            $messageContainer.append(html);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            $chatWindow.animate({ scrollTop: $chatWindow[0].scrollHeight }, 500);
+        }
+
+        function clearMessages() {
+            $messageContainer.find('.message-bubble').remove();
+            $homeView.show();
+        }
+
+
+        $chatForm.on('submit', function(e) {
+            e.preventDefault();
+            const prompt = $input.val().trim();
+            if (!prompt) return;
+
+            appendMessage('user', prompt);
+            $input.val('').trigger('input');
+            $typingIndicator.show();
+
+            $.ajax({
+                url: "/get",
+                type: "POST",
+                data: { msg: prompt },
+                success: function(response) {
+                    $typingIndicator.hide();
+                    appendMessage('bot', response);
+                },
+                error: function() {
+                    $typingIndicator.hide();
+                    appendMessage('bot', "I'm sorry, I encountered an error. Please try again later.");
+                }
+            });
+        });
+
+        // Enter to submit, shift+enter for new line
+        $input.on('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                $chatForm.submit();
+            }
+        });
+
+    </script>
+</body>
 </html>
